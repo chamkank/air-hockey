@@ -25,10 +25,12 @@ window_width = 400
 window_height = 1000
 w = fromIntegral window_width :: GLdouble
 h = fromIntegral window_height :: GLdouble
+window_title = "Air Hockey"
 
+-- background constants
+background_file_path = "Game/ice-tile.bmp"
+background_tile_width = 256
+background_tile_height = 256
 
+-- game constants
 data GameAttribute = Score Int -- define algebraic type for Score
-
-
-
-
