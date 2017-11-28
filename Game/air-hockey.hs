@@ -38,6 +38,8 @@ background_tile_height = 256
 data GameAttribute = Score Int Int -- define algebraic type for Score
 fps_delay = 30
 puck_radius = 15.0
+strikerA_radius = 30.0
+strikerB_radius = 30.0
 
 -- initialize game
 main :: IO ()
@@ -48,7 +50,7 @@ main = do
       game_map = textureMap 0 background_tile_width background_tile_height w h  -- create a PreTextureMap to cover the screen
 
       -- create object groups (currently empty)
-      strikers = objectGroup "strikerGroup" []
+      strikers = objectGroup "strikerGroup" [createStrikerA, createStrikerB]
       puck = objectGroup "puckGroup" [createPuck]                                    
       
       game_score = Score 0 0                                                    -- initialize game score to 0 for both players
@@ -58,13 +60,24 @@ main = do
   funInit win_config game_map [strikers, puck] () game_score input_map gameCycle (Timer fps_delay) img_list
 
 
+createStrikerA :: GameObject ()
+createStrikerA = 
+  let strikerA_pic = Basic (Circle strikerA_radius 1.0 0.0 0.0 Filled)
+  in object "strikerA" strikerA_pic False (w/2, 0) (0, 0) ()
+
+createStrikerB :: GameObject ()
+createStrikerB = 
+  let strikerB_pic = Basic (Circle strikerB_radius 0.0 0.0 1.0 Filled)
+  in object "strikerB" strikerB_pic False (w/2, h) (0, 0) ()
+
 createPuck :: GameObject ()
 createPuck = 
-  let puck_pic = Basic (Circle puck_radius 0.0 1.0 0.0 Filled)
+  let puck_pic = Basic (Circle puck_radius 0.0 0.0 0.0 Filled)
   in object "puck" puck_pic False (w/2, h/2) (0, 0) ()
+
 
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
 gameCycle = do
-    printOnScreen (show 5) TimesRoman24 (0,0) 1.0 1.0 1.0
+    printOnScreen (show 0) TimesRoman24 (0,0) 1.0 1.0 1.0
     showFPS TimesRoman24 (w-40,0) 1.0 0.0 0.0
