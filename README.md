@@ -5,6 +5,7 @@ Air hockey written in Haskell (FunGEn)
 ```
 git clone http://github.com/chamkank/air-hockey
 cd air-hockey
+stack setup
 stack install
 air-hockey
 ```
