@@ -45,7 +45,7 @@ strikerB_radius = 30.0
 main :: IO ()
 main = do
   background_tile <- getDataFileName background_file_path                       -- getDataFileName :: FilePath -> IO FilePath
-  let win_config = ((100, 80), (window_width, window_height), window_title)
+  let win_config = ((win_x_pos, win_y_pos), (window_width, window_height), window_title)
       img_list = [(background_tile, Nothing)]                                   -- [(FilePath, InvList)] (we don't need InvList)
       game_map = textureMap 0 background_tile_width background_tile_height w h  -- create a PreTextureMap to cover the screen
 
@@ -63,12 +63,12 @@ main = do
 createStrikerA :: GameObject ()
 createStrikerA = 
   let strikerA_pic = Basic (Circle strikerA_radius 1.0 0.0 0.0 Filled)
-  in object "strikerA" strikerA_pic False (w/2, 0) (0, 0) ()
+  in object "strikerA" strikerA_pic False (w/2, 30) (0, 0) ()
 
 createStrikerB :: GameObject ()
 createStrikerB = 
   let strikerB_pic = Basic (Circle strikerB_radius 0.0 0.0 1.0 Filled)
-  in object "strikerB" strikerB_pic False (w/2, h) (0, 0) ()
+  in object "strikerB" strikerB_pic False (w/2, h-30) (0, 0) ()
 
 createPuck :: GameObject ()
 createPuck = 
