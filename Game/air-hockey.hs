@@ -54,7 +54,14 @@ main = do
       puck = objectGroup "puckGroup" [createPuck]                                    
       
       game_score = Score 0 0                                                    -- initialize game score to 0 for both players
-      input_map = []                                                            -- define key mapping to functions
+      input_map = [(SpecialKey KeyRight, StillDown, moveStrikerARight),
+      (SpecialKey KeyLeft, StillDown, moveStrikerALeft),
+      (SpecialKey KeyUp, StillDown, moveStrikerAUp),
+      (SpecialKey KeyDown, StillDown, moveStrikerADown)--,
+      -- still gotta figure out what the constructors are for W and S lol
+      --(SpecialKey KeyW, StillDown, moveStrikerBRight),
+      --(SpecialKey KeyS, StillDown, moveStrikerBLeft)      
+      ]                                                            -- define key mapping to functions
   
   -- initialize game with defined properties above
   funInit win_config game_map [strikers, puck] () game_score input_map gameCycle (Timer fps_delay) img_list
@@ -75,9 +82,72 @@ createPuck =
   let puck_pic = Basic (Circle puck_radius 0.0 0.0 0.0 Filled)
   in object "puck" puck_pic False (w/2, h/2) (0, 0) ()
 
+-- moves Striker A to the Right
+moveStrikerARight :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerARight _ _ = do
+  obj     <- findObject "strikerA" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (sX,_)  <- getObjectSize obj
+  if (pX + (sX/2) + 10 <= w)
+   then (setObjectPosition ((pX + 10),pY) obj)
+   else (setObjectPosition ((w - (sX/2)),pY) obj)
+
+-- moves Striker A to the left
+moveStrikerALeft :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerALeft _ _ = do
+  obj     <- findObject "strikerA" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (sX,_)  <- getObjectSize obj
+  if (pX - (sX/2) - 10 >= 0)
+    then (setObjectPosition ((pX - 10),pY) obj)
+    else (setObjectPosition (sX/2,pY) obj)
+
+-- moves Striker A to the Up
+moveStrikerAUp :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerAUp _ _ = do
+  obj     <- findObject "strikerA" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (_,sY)  <- getObjectSize obj
+  if (pY + (sY/2) + 10 <= (h/2))
+    then (setObjectPosition (pX,(pY + 10)) obj)
+    else (setObjectPosition (pX,pY) obj)
+
+-- moves Striker A to the Down
+moveStrikerADown :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerADown _ _ = do
+  obj     <- findObject "strikerA" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (_,sY)  <- getObjectSize obj
+  if (pY - (sY/2) - 10 >= 0)
+    then (setObjectPosition (pX,(pY - 10)) obj)
+    else (setObjectPosition (pX,pY) obj)    
+
+
+-- moves Striker B to the Right
+moveStrikerBRight :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerBRight _ _ = do
+  obj     <- findObject "strikerB" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (sX,_)  <- getObjectSize obj
+  if (pX + (sX/2) + 10 <= w)
+   then (setObjectPosition ((pX + 10),pY) obj)
+   else (setObjectPosition ((w - (sX/2)),pY) obj)
+
+-- moves Striker B to the left
+moveStrikerBLeft :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerBLeft _ _ = do
+  obj     <- findObject "strikerB" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (sX,_)  <- getObjectSize obj
+  if (pX - (sX/2) - 10 >= 0)
+    then (setObjectPosition ((pX - 10),pY) obj)
+    else (setObjectPosition (sX/2,pY) obj)
+
 
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
 gameCycle = do
     printOnScreen (show 0) TimesRoman24 (0,0) 1.0 1.0 1.0
+    strikerA <- findObject "strikerA" "strikerGroup"
+    strikerB <- findObject "strikerB" "strikerGroup"
     showFPS TimesRoman24 (w-40,0) 1.0 0.0 0.0
