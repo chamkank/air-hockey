@@ -55,13 +55,13 @@ main = do
       
       game_score = Score 0 0                                                    -- initialize game score to 0 for both players
       input_map = [(SpecialKey KeyRight, StillDown, moveStrikerARight),
-      (SpecialKey KeyLeft, StillDown, moveStrikerALeft),
-      (SpecialKey KeyUp, StillDown, moveStrikerAUp),
-      (SpecialKey KeyDown, StillDown, moveStrikerADown)--,
+        (SpecialKey KeyLeft, StillDown, moveStrikerALeft),
+        (SpecialKey KeyUp, StillDown, moveStrikerAUp),
+        (SpecialKey KeyDown, StillDown, moveStrikerADown)--,
       -- still gotta figure out what the constructors are for W and S lol
       --(SpecialKey KeyW, StillDown, moveStrikerBRight),
       --(SpecialKey KeyS, StillDown, moveStrikerBLeft)      
-      ]                                                            -- define key mapping to functions
+        ]                                                            -- define key mapping to functions
   
   -- initialize game with defined properties above
   funInit win_config game_map [strikers, puck] () game_score input_map gameCycle (Timer fps_delay) img_list
