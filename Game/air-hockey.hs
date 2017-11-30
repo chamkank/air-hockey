@@ -57,10 +57,11 @@ main = do
       input_map = [(SpecialKey KeyRight, StillDown, moveStrikerARight),
         (SpecialKey KeyLeft, StillDown, moveStrikerALeft),
         (SpecialKey KeyUp, StillDown, moveStrikerAUp),
-        (SpecialKey KeyDown, StillDown, moveStrikerADown)--,
-      -- still gotta figure out what the constructors are for W and S lol
-      --(SpecialKey KeyW, StillDown, moveStrikerBRight),
-      --(SpecialKey KeyS, StillDown, moveStrikerBLeft)      
+        (SpecialKey KeyDown, StillDown, moveStrikerADown),
+      	(Char 'd', StillDown, moveStrikerBRight),
+      	(Char 'a', StillDown, moveStrikerBLeft),      
+        (Char 'w', StillDown, moveStrikerBUp),
+      	(Char 's', StillDown, moveStrikerBDown)
         ]                                                            -- define key mapping to functions
   
   -- initialize game with defined properties above
@@ -142,7 +143,26 @@ moveStrikerBLeft _ _ = do
   if (pX - (sX/2) - 10 >= 0)
     then (setObjectPosition ((pX - 10),pY) obj)
     else (setObjectPosition (sX/2,pY) obj)
+    
+-- moves Striker B to the Up
+moveStrikerBUp :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerBUp _ _ = do
+  obj     <- findObject "strikerB" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (_,sY)  <- getObjectSize obj
+  if (pY + (sY/2) + 10 <= h)
+    then (setObjectPosition (pX,(pY + 10)) obj)
+    else (setObjectPosition (pX,pY) obj)
 
+-- moves Striker B to the Down
+moveStrikerBDown :: Modifiers -> Position -> IOGame GameAttribute () () () ()
+moveStrikerBDown _ _ = do
+  obj     <- findObject "strikerB" "strikerGroup"
+  (pX,pY) <- getObjectPosition obj
+  (_,sY)  <- getObjectSize obj
+  if (pY - (sY/2) - 10 >= (h/2))
+    then (setObjectPosition (pX,(pY - 10)) obj)
+    else (setObjectPosition (pX,pY) obj)        
 
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
