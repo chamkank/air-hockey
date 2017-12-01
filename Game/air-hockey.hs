@@ -38,8 +38,13 @@ background_tile_height = 256
 data GameAttribute = Score Int Int -- define algebraic type for Score
 fps_delay = 30
 puck_radius = 15.0
+puck_speed = 7
+
 strikerA_radius = 30.0
+strikerA_friction = -5.0
+
 strikerB_radius = 30.0
+strikerB_friction = -5.0
 
 -- initialize game
 main :: IO ()
@@ -90,7 +95,7 @@ moveStrikerARight _ _ = do
   (pX,pY) <- getObjectPosition obj
   (sX,_)  <- getObjectSize obj
   if (pX + (sX/2) + 10 <= w)
-   then (setObjectPosition ((pX + 10),pY) obj)
+   then (setObjectPosition ((pX + (10+strikerA_friction)),pY) obj)
    else (setObjectPosition ((w - (sX/2)),pY) obj)
 
 -- moves Striker A to the left
@@ -100,7 +105,7 @@ moveStrikerALeft _ _ = do
   (pX,pY) <- getObjectPosition obj
   (sX,_)  <- getObjectSize obj
   if (pX - (sX/2) - 10 >= 0)
-    then (setObjectPosition ((pX - 10),pY) obj)
+    then (setObjectPosition ((pX - (10+strikerA_friction)),pY) obj)
     else (setObjectPosition (sX/2,pY) obj)
 
 -- moves Striker A to the Up
@@ -110,7 +115,7 @@ moveStrikerAUp _ _ = do
   (pX,pY) <- getObjectPosition obj
   (_,sY)  <- getObjectSize obj
   if (pY + (sY/2) + 10 <= (h/2))
-    then (setObjectPosition (pX,(pY + 10)) obj)
+    then (setObjectPosition (pX,(pY + (10+strikerA_friction))) obj)
     else (setObjectPosition (pX,pY) obj)
 
 -- moves Striker A to the Down
@@ -120,7 +125,7 @@ moveStrikerADown _ _ = do
   (pX,pY) <- getObjectPosition obj
   (_,sY)  <- getObjectSize obj
   if (pY - (sY/2) - 10 >= 0)
-    then (setObjectPosition (pX,(pY - 10)) obj)
+    then (setObjectPosition (pX,(pY - (10+strikerA_friction))) obj)
     else (setObjectPosition (pX,pY) obj)    
 
 
@@ -131,7 +136,7 @@ moveStrikerBRight _ _ = do
   (pX,pY) <- getObjectPosition obj
   (sX,_)  <- getObjectSize obj
   if (pX + (sX/2) + 10 <= w)
-   then (setObjectPosition ((pX + 10),pY) obj)
+   then (setObjectPosition ((pX + (10+strikerA_friction)),pY) obj)
    else (setObjectPosition ((w - (sX/2)),pY) obj)
 
 -- moves Striker B to the left
@@ -141,7 +146,7 @@ moveStrikerBLeft _ _ = do
   (pX,pY) <- getObjectPosition obj
   (sX,_)  <- getObjectSize obj
   if (pX - (sX/2) - 10 >= 0)
-    then (setObjectPosition ((pX - 10),pY) obj)
+    then (setObjectPosition ((pX - (10+strikerA_friction)),pY) obj)
     else (setObjectPosition (sX/2,pY) obj)
     
 -- moves Striker B to the Up
@@ -151,7 +156,7 @@ moveStrikerBUp _ _ = do
   (pX,pY) <- getObjectPosition obj
   (_,sY)  <- getObjectSize obj
   if (pY + (sY/2) + 10 <= h)
-    then (setObjectPosition (pX,(pY + 10)) obj)
+    then (setObjectPosition (pX,(pY + (10+strikerA_friction))) obj)
     else (setObjectPosition (pX,pY) obj)
 
 -- moves Striker B to the Down
@@ -161,32 +166,32 @@ moveStrikerBDown _ _ = do
   (pX,pY) <- getObjectPosition obj
   (_,sY)  <- getObjectSize obj
   if (pY - (sY/2) - 10 >= (h/2))
-    then (setObjectPosition (pX,(pY - 10)) obj)
+    then (setObjectPosition (pX,(pY - (10+strikerA_friction))) obj)
     else (setObjectPosition (pX,pY) obj)        
 
 -- handle puck interaction with Striker A
 puckHitA sX sY pX pY puck
-   | (pX == sX && pY >= sY) = setObjectSpeed (0,5) puck
-   | (pX < sX && pY > sY) = setObjectSpeed (-5,5) puck
-   | (pX < sX && pY == sY) = setObjectSpeed (-5,0) puck
-   | (pX > sX && pY > sY) = setObjectSpeed (5,5) puck
-   | (pX > sX && pY == sY) = setObjectSpeed (5,0) puck
-   | (pX == sX && pY <= sY) = setObjectSpeed (0,-5) puck
-   | (pX < sX && pY < sY) = setObjectSpeed (-5,-5) puck
-   | (pX > sX && pY < sY) = setObjectSpeed (5,-5) puck
-   | otherwise = setObjectSpeed (0,5) puck
+   | (pX == sX && pY >= sY) = setObjectSpeed (0,puck_speed) puck
+   | (pX < sX && pY > sY) = setObjectSpeed (-puck_speed,puck_speed) puck
+   | (pX < sX && pY == sY) = setObjectSpeed (-puck_speed,0) puck
+   | (pX > sX && pY > sY) = setObjectSpeed (puck_speed,puck_speed) puck
+   | (pX > sX && pY == sY) = setObjectSpeed (puck_speed,0) puck
+   | (pX == sX && pY <= sY) = setObjectSpeed (0,-puck_speed) puck
+   | (pX < sX && pY < sY) = setObjectSpeed (-puck_speed,-puck_speed) puck
+   | (pX > sX && pY < sY) = setObjectSpeed (puck_speed,-puck_speed) puck
+   | otherwise = setObjectSpeed (0,puck_speed) puck
 
 -- handle puck interaction with Stricker B
 puckHitB sX sY pX pY puck
-   | (pX == sX && pY <= sY) = setObjectSpeed (0,-5) puck
-   | (pX < sX && pY < sY) = setObjectSpeed (-5,-5) puck
-   | (pX < sX && pY == sY) = setObjectSpeed (-5,0) puck
-   | (pX > sX && pY < sY) = setObjectSpeed (5,-5) puck
-   | (pX > sX && pY == sY) = setObjectSpeed (5,0) puck
-   | (pX == sX && pY >= sY) = setObjectSpeed (0,5) puck
-   | (pX < sX && pY > sY) = setObjectSpeed (-5,5) puck
-   | (pX > sX && pY > sY) = setObjectSpeed (5,5) puck
-   | otherwise = setObjectSpeed (0,5) puck
+   | (pX == sX && pY <= sY) = setObjectSpeed (0,-puck_speed) puck
+   | (pX < sX && pY < sY) = setObjectSpeed (-puck_speed,-puck_speed) puck
+   | (pX < sX && pY == sY) = setObjectSpeed (-puck_speed,0) puck
+   | (pX > sX && pY < sY) = setObjectSpeed (puck_speed,-puck_speed) puck
+   | (pX > sX && pY == sY) = setObjectSpeed (puck_speed,0) puck
+   | (pX == sX && pY >= sY) = setObjectSpeed (0,puck_speed) puck
+   | (pX < sX && pY > sY) = setObjectSpeed (-puck_speed,puck_speed) puck
+   | (pX > sX && pY > sY) = setObjectSpeed (puck_speed,puck_speed) puck
+   | otherwise = setObjectSpeed (0,puck_speed) puck
 
 
 -- game loop
