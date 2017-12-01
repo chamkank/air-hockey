@@ -202,7 +202,18 @@ gameCycle = do
     
     col1 <- objectLeftMapCollision puck
     col2 <- objectRightMapCollision puck
-    when (col1 || col2) (reverseXSpeed puck)
+    when col1 
+    	(do
+    		(pX,pY)<-getObjectPosition puck
+    		setObjectPosition(pX + 5, pY) puck
+    		(reverseXSpeed puck))
+
+    when col2 
+    	(do
+    		(pX,pY)<-getObjectPosition puck
+    		setObjectPosition(pX - 5, pY) puck
+    		(reverseXSpeed puck))	
+
     
     col3 <- objectTopMapCollision puck
     col4 <- objectBottomMapCollision puck
