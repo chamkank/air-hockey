@@ -39,12 +39,13 @@ data GameAttribute = Score Int Int -- define algebraic type for Score
 fps_delay = 30
 puck_radius = 15.0
 puck_speed = 7
+puck_friction = 0.1
 
 strikerA_radius = 30.0
-strikerA_friction = -5.0
+strikerA_friction = -5
 
 strikerB_radius = 30.0
-strikerB_friction = -5.0
+strikerB_friction = -5
 
 -- initialize game
 main :: IO ()
@@ -193,6 +194,13 @@ puckHitB sX sY pX pY puck
    | (pX > sX && pY > sY) = setObjectSpeed (puck_speed,puck_speed) puck
    | otherwise = setObjectSpeed (0,puck_speed) puck
 
+puckFriction vX vY puck
+   | (vX < 0) = setObjectSpeed (vX+puck_friction, vY) puck
+   | (vX > 0) = setObjectSpeed (vX-puck_friction, vY) puck
+   | (vY < 0) = setObjectSpeed (vX, vY+puck_friction) puck
+   | (vY > 0) = setObjectSpeed (vX, vY-puck_friction) puck
+   | otherwise = setObjectSpeed (vX, vY) puck
+
 
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
@@ -207,6 +215,10 @@ gameCycle = do
     
     col1 <- objectLeftMapCollision puck
     col2 <- objectRightMapCollision puck
+
+    (vX,vY) <- getObjectSpeed puck
+    _ <- puckFriction vX vY puck
+
     when col1 
     	(do
     		(pX,pY)<-getObjectPosition puck
