@@ -58,10 +58,10 @@ main = do
         (SpecialKey KeyLeft, StillDown, moveStrikerALeft),
         (SpecialKey KeyUp, StillDown, moveStrikerAUp),
         (SpecialKey KeyDown, StillDown, moveStrikerADown),
-      	(Char 'd', StillDown, moveStrikerBRight),
-      	(Char 'a', StillDown, moveStrikerBLeft),      
+        (Char 'd', StillDown, moveStrikerBRight),
+        (Char 'a', StillDown, moveStrikerBLeft),      
         (Char 'w', StillDown, moveStrikerBUp),
-      	(Char 's', StillDown, moveStrikerBDown)
+        (Char 's', StillDown, moveStrikerBDown)
         ]                                                            -- define key mapping to functions
   
   -- initialize game with defined properties above
@@ -164,10 +164,70 @@ moveStrikerBDown _ _ = do
     then (setObjectPosition (pX,(pY - 10)) obj)
     else (setObjectPosition (pX,pY) obj)        
 
+-- handle puck interaction with Striker A
+puckHitA sX sY pX pY puck
+   | (pX == sX && pY >= sY) = setObjectSpeed (0,5) puck
+   | (pX < sX && pY > sY) = setObjectSpeed (-5,5) puck
+   | (pX < sX && pY == sY) = setObjectSpeed (-5,0) puck
+   | (pX > sX && pY > sY) = setObjectSpeed (5,5) puck
+   | (pX > sX && pY == sY) = setObjectSpeed (5,0) puck
+   | (pX == sX && pY <= sY) = setObjectSpeed (0,-5) puck
+   | (pX < sX && pY < sY) = setObjectSpeed (-5,-5) puck
+   | (pX > sX && pY < sY) = setObjectSpeed (5,-5) puck
+   | otherwise = setObjectSpeed (0,5) puck
+
+-- handle puck interaction with Stricker B
+puckHitB sX sY pX pY puck
+   | (pX == sX && pY <= sY) = setObjectSpeed (0,-5) puck
+   | (pX < sX && pY < sY) = setObjectSpeed (-5,-5) puck
+   | (pX < sX && pY == sY) = setObjectSpeed (-5,0) puck
+   | (pX > sX && pY < sY) = setObjectSpeed (5,-5) puck
+   | (pX > sX && pY == sY) = setObjectSpeed (5,0) puck
+   | (pX == sX && pY >= sY) = setObjectSpeed (0,5) puck
+   | (pX < sX && pY > sY) = setObjectSpeed (-5,5) puck
+   | (pX > sX && pY > sY) = setObjectSpeed (5,5) puck
+   | otherwise = setObjectSpeed (0,5) puck
+
+
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
 gameCycle = do
-    printOnScreen (show 0) TimesRoman24 (0,0) 1.0 1.0 1.0
+    (Score x y) <- getGameAttribute
+    printOnScreen (show x) TimesRoman24 (10,10) 1.0 1.0 1.0
+    printOnScreen (show y) TimesRoman24 (10,h-30) 1.0 1.0 1.0
+    
     strikerA <- findObject "strikerA" "strikerGroup"
     strikerB <- findObject "strikerB" "strikerGroup"
+    puck <- findObject "puck" "puckGroup"
+    
+    col1 <- objectLeftMapCollision puck
+    col2 <- objectRightMapCollision puck
+    when (col1 || col2) (reverseXSpeed puck)
+    
+    col3 <- objectTopMapCollision puck
+    col4 <- objectBottomMapCollision puck
+    when col3
+       (do
+           setGameAttribute (Score (x+1) y)
+           setObjectPosition (w/2,h/2) puck
+           setObjectSpeed (0,0) puck)
+    when col4
+       (do
+           setGameAttribute (Score x (y+1))
+           setObjectPosition (w/2,h/2) puck
+           setObjectSpeed (0,0) puck)
+
+    col5 <- objectsCollision puck strikerA
+    col6 <- objectsCollision puck strikerB
+    when col5 
+       (do 
+           (sX,sY)<-getObjectPosition strikerA 
+           (pX,pY)<-getObjectPosition puck 
+           puckHitA sX sY pX pY puck)
+    when col6
+       (do
+           (sX,sY)<-getObjectPosition strikerB 
+           (pX,pY)<-getObjectPosition puck 
+           puckHitB sX sY pX pY puck)
+
     showFPS TimesRoman24 (w-40,0) 1.0 0.0 0.0
