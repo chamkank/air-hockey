@@ -42,10 +42,10 @@ puck_speed = 7
 puck_friction = 0.1
 
 strikerA_radius = 30.0
-strikerA_friction = -5
+strikerA_friction = -4
 
 strikerB_radius = 30.0
-strikerB_friction = -5
+strikerB_friction = -4
 
 -- initialize game
 main :: IO ()
@@ -57,7 +57,7 @@ main = do
 
       -- create object groups (currently empty)
       strikers = objectGroup "strikerGroup" [createStrikerA, createStrikerB]
-      puck = objectGroup "puckGroup" [createPuck]                                    
+      puck = objectGroup "puckGroup" [createPuck]                           
       
       game_score = Score 0 0                                                    -- initialize game score to 0 for both players
       input_map = [(SpecialKey KeyRight, StillDown, moveStrikerARight),
@@ -171,6 +171,7 @@ moveStrikerBDown _ _ = do
     else (setObjectPosition (pX,pY) obj)        
 
 -- handle puck interaction with Striker A
+puckHitA :: Double -> Double -> Double -> Double -> GameObject() -> IOGame GameAttribute () () () ()
 puckHitA sX sY pX pY puck
    | (pX == sX && pY >= sY) = setObjectSpeed (0,puck_speed) puck
    | (pX < sX && pY > sY) = setObjectSpeed (-puck_speed,puck_speed) puck
@@ -182,7 +183,8 @@ puckHitA sX sY pX pY puck
    | (pX > sX && pY < sY) = setObjectSpeed (puck_speed,-puck_speed) puck
    | otherwise = setObjectSpeed (0,puck_speed) puck
 
--- handle puck interaction with Stricker B
+-- handle puck interaction with Striker B
+puckHitB :: Double -> Double -> Double -> Double -> GameObject() -> IOGame GameAttribute () () () ()
 puckHitB sX sY pX pY puck
    | (pX == sX && pY <= sY) = setObjectSpeed (0,-puck_speed) puck
    | (pX < sX && pY < sY) = setObjectSpeed (-puck_speed,-puck_speed) puck
@@ -194,13 +196,14 @@ puckHitB sX sY pX pY puck
    | (pX > sX && pY > sY) = setObjectSpeed (puck_speed,puck_speed) puck
    | otherwise = setObjectSpeed (0,puck_speed) puck
 
+-- handles puck friction
+puckFriction :: Double -> Double -> GameObject() -> IOGame GameAttribute () () () ()
 puckFriction vX vY puck
    | (vX < 0) = setObjectSpeed (vX+puck_friction, vY) puck
    | (vX > 0) = setObjectSpeed (vX-puck_friction, vY) puck
    | (vY < 0) = setObjectSpeed (vX, vY+puck_friction) puck
    | (vY > 0) = setObjectSpeed (vX, vY-puck_friction) puck
    | otherwise = setObjectSpeed (vX, vY) puck
-
 
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
@@ -209,6 +212,7 @@ gameCycle = do
     printOnScreen (show x) TimesRoman24 (10,10) 1.0 1.0 1.0
     printOnScreen (show y) TimesRoman24 (10,h-30) 1.0 1.0 1.0
     
+
     strikerA <- findObject "strikerA" "strikerGroup"
     strikerB <- findObject "strikerB" "strikerGroup"
     puck <- findObject "puck" "puckGroup"
@@ -217,7 +221,7 @@ gameCycle = do
     col2 <- objectRightMapCollision puck
 
     (vX,vY) <- getObjectSpeed puck
-    _ <- puckFriction vX vY puck
+    do puckFriction vX vY puck
 
     when col1 
     	(do
