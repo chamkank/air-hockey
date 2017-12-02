@@ -209,13 +209,27 @@ puckFriction vX vY puck
    | (vX > 0 && vY == 0) = setObjectSpeed (vX-puck_friction, vY) puck
    | otherwise = setObjectSpeed (vX, vY) puck
 
+-- handles printing score for strikerA
+printScoreA :: Int -> Int -> IOGame GameAttribute () () () ()
+printScoreA x y
+   | (x < y) = printOnScreen (show x) TimesRoman24 (10,10) 1.0 0.0 0.0
+   | (x > y) = printOnScreen (show x) TimesRoman24 (10,10) 0.0 1.0 0.0
+   | otherwise = printOnScreen (show x) TimesRoman24 (10,10) 0.0 0.0 0.0
+
+-- handles printing score for strikerB
+printScoreB :: Int -> Int -> IOGame GameAttribute () () () ()
+printScoreB x y
+   | (x < y) = printOnScreen (show y) TimesRoman24 (10,h-30) 0.0 1.0 0.0
+   | (x > y) = printOnScreen (show y) TimesRoman24 (10,h-30) 1.0 0.0 0.0
+   | otherwise = printOnScreen (show y) TimesRoman24 (10,h-30) 0.0 0.0 0.0
+
 -- game loop
 gameCycle :: IOGame GameAttribute () () () ()
 gameCycle = do
     (Score x y) <- getGameAttribute
-    printOnScreen (show x) TimesRoman24 (10,10) 0.0 0.0 0.0
-    printOnScreen (show y) TimesRoman24 (10,h-30) 0.0 0.0 0.0
     
+    printScoreA x y
+    printScoreB x y
 
     strikerA <- findObject "strikerA" "strikerGroup"
     strikerB <- findObject "strikerB" "strikerGroup"
