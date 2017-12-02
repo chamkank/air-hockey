@@ -30,9 +30,9 @@ win_y_pos = 10
 window_title = "Air Hockey"
 
 -- background constants
-background_file_path = "Game/ice-tile.bmp"
-background_tile_width = 256
-background_tile_height = 256
+background_file_path = "Game/background.bmp"
+background_tile_width = 1
+background_tile_height = 600
 
 -- game constants
 data GameAttribute = Score Int Int -- define algebraic type for Score
