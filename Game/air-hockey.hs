@@ -39,7 +39,7 @@ data GameAttribute = Score Int Int -- define algebraic type for Score
 fps_delay = 30
 puck_radius = 15.0
 puck_speed = 7
-puck_friction = 0.1
+puck_friction = 0.035
 
 strikerA_radius = 30.0
 strikerA_friction = -4
@@ -199,10 +199,14 @@ puckHitB sX sY pX pY puck
 -- handles puck friction
 puckFriction :: Double -> Double -> GameObject() -> IOGame GameAttribute () () () ()
 puckFriction vX vY puck
-   | (vX < 0) = setObjectSpeed (vX+puck_friction, vY) puck
-   | (vX > 0) = setObjectSpeed (vX-puck_friction, vY) puck
-   | (vY < 0) = setObjectSpeed (vX, vY+puck_friction) puck
-   | (vY > 0) = setObjectSpeed (vX, vY-puck_friction) puck
+   | (vX < 0 && vY < 0) = setObjectSpeed (vX+puck_friction, vY+puck_friction) puck
+   | (vX > 0 && vY < 0) = setObjectSpeed (vX-puck_friction, vY+puck_friction) puck
+   | (vX < 0 && vY > 0) = setObjectSpeed (vX+puck_friction, vY-puck_friction) puck
+   | (vX > 0 && vY > 0) = setObjectSpeed (vX-puck_friction, vY-puck_friction) puck
+   | (vX == 0 && vY < 0) = setObjectSpeed (vX, vY+puck_friction) puck
+   | (vX == 0 && vY > 0) = setObjectSpeed (vX, vY-puck_friction) puck
+   | (vX < 0 && vY == 0) = setObjectSpeed (vX+puck_friction, vY) puck
+   | (vX > 0 && vY == 0) = setObjectSpeed (vX-puck_friction, vY) puck
    | otherwise = setObjectSpeed (vX, vY) puck
 
 -- game loop
