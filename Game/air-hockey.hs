@@ -224,18 +224,17 @@ gameCycle = do
     do puckFriction vX vY puck
 
     when col1 
-    	(do
-    		(pX,pY)<-getObjectPosition puck
-    		setObjectPosition(pX + 5, pY) puck
-    		(reverseXSpeed puck))
+      (do
+        (pX,pY)<-getObjectPosition puck
+        setObjectPosition(pX + 5, pY) puck
+        (reverseXSpeed puck))
 
     when col2 
-    	(do
-    		(pX,pY)<-getObjectPosition puck
-    		setObjectPosition(pX - 5, pY) puck
-    		(reverseXSpeed puck))	
+      (do
+        (pX,pY)<-getObjectPosition puck
+        setObjectPosition(pX - 5, pY) puck
+        (reverseXSpeed puck))
 
-    
     col3 <- objectTopMapCollision puck
     col4 <- objectBottomMapCollision puck
     when col3
