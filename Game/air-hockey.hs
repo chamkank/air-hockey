@@ -213,8 +213,8 @@ puckFriction vX vY puck
 gameCycle :: IOGame GameAttribute () () () ()
 gameCycle = do
     (Score x y) <- getGameAttribute
-    printOnScreen (show x) TimesRoman24 (10,10) 1.0 1.0 1.0
-    printOnScreen (show y) TimesRoman24 (10,h-30) 1.0 1.0 1.0
+    printOnScreen (show x) TimesRoman24 (10,10) 0.0 0.0 0.0
+    printOnScreen (show y) TimesRoman24 (10,h-30) 0.0 0.0 0.0
     
 
     strikerA <- findObject "strikerA" "strikerGroup"
