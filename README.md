@@ -1,5 +1,5 @@
 # air-hockey
-Air hockey written in Haskell (FunGEn)
+Air hockey written in Haskell using [FunGEn (Functional Game Engine)](https://github.com/haskell-game/fungen)
 
 ## Setup
 ```
